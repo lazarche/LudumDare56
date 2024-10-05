@@ -7,14 +7,15 @@ public class PlayerMotor : MonoBehaviour
     private CharacterController controller;
     private Vector3 playerVelocity;
     public float speed = 5f;
-    public float gravity = -9.8f;
+    public float gravity = -100f;
     public float jumpHeight = 3f;
 
     bool lerpCrouch = false;
     float crouchTimer = 0f;
-    bool crouching = false;
-
-    bool sprinting = false;
+    public bool crouching = false;
+    public bool sprinting = false;
+    Vector3 moveDirection = Vector3.zero;
+    public bool Walking { get { return moveDirection.magnitude > 0; } }
 
     void Start()
     {
@@ -41,13 +42,12 @@ public class PlayerMotor : MonoBehaviour
     }
     public void ProcessMove(Vector2 input)
     {
-        Vector3 moveDirection = Vector3.zero;
         moveDirection.x = input.x;
         moveDirection.z = input.y;
 
         float currentSpeed = speed;
         if (crouching)
-            currentSpeed = 0.7f;
+            currentSpeed *= 0.7f;
         else if(sprinting)
             currentSpeed *= 1.4f;
 
