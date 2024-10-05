@@ -13,6 +13,7 @@ public class PlayerLook : MonoBehaviour
     private void Awake()
     {
         cam = Camera.main;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void ProcessLook(Vector2 input)
