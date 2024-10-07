@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -36,6 +37,7 @@ public class Gun : MonoBehaviour
     [Header("UI")]
     [SerializeField] TextMeshProUGUI currentMagText;
     [SerializeField] TextMeshProUGUI maxMagText;
+    [SerializeField] float screenShake;
 
     private void Awake()
     {
@@ -69,7 +71,9 @@ public class Gun : MonoBehaviour
             Shoot();
     }
     public virtual void Shoot() {
-        
+        cam.DOComplete();
+        cam.DOShakePosition(0.1f, screenShake, 1);
+
         shootingTime += Time.deltaTime;
         gunSound.Play();
         muzzleFlash.Play();
@@ -116,7 +120,6 @@ public class Gun : MonoBehaviour
         currentAccuracy = Mathf.Clamp(currentAccuracy, baseAccuracy, maxInaccuracy);
         UIManager.Instance.crossHair.UpdateCrossHair(currentAccuracy / maxInaccuracy);
     }
-
     public float GetAccuracy()
     {
         return currentAccuracy * 0.1f;

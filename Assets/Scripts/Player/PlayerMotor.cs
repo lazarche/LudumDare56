@@ -1,11 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMotor : MonoBehaviour
 {
-    private CharacterController controller;
-    private Vector3 playerVelocity;
+    public CharacterController controller;
+    public Vector3 playerVelocity;
     public float speed = 5f;
     public float gravity = -100f;
     public float jumpHeight = 3f;
@@ -14,7 +15,8 @@ public class PlayerMotor : MonoBehaviour
     float crouchTimer = 0f;
     public bool crouching = false;
     public bool sprinting = false;
-    Vector3 moveDirection = Vector3.zero;
+    public Action jumped;
+    public Vector3 moveDirection = Vector3.zero;
     public bool Walking { get { return moveDirection.magnitude > 0; } }
 
     void Start()
@@ -62,6 +64,7 @@ public class PlayerMotor : MonoBehaviour
     {
         if(controller.isGrounded)
         {
+            jumped?.Invoke();
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);
         }
     }

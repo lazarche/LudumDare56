@@ -4,22 +4,33 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    Transform player;               // Reference to the player
+
+    public Transform player;               // Reference to the player
     public float attackRange = 2f;         // Distance to trigger attack
     public float stoppingDistance = 0.5f;  // Stopping distance for nav agent
     public float attackCooldown = 1.5f;    // Time between attacks
     public int attackDamage = 10;          // Damage dealt per attack
     public float attackRadius = 0.5f;      // Radius of attack (small region in front)
 
-
     public float hp = 100;
+    public int exp = 100;
+    
 
     public bool playedSound = false;
     public float soundRadius = 6f;
 
-    private NavMeshAgent agent;            // NavMeshAgent for movement
+    protected NavMeshAgent agent;            // NavMeshAgent for movement
     [SerializeField]  Animator animator;             // Animator to control animations
-    private float lastAttackTime = 0f;     // Timer to control attack cooldown
+    protected float lastAttackTime = 0f;     // Timer to control attack cooldown
+
+    [SerializeField] int maxStunned = 3;
+    protected int stunned = 0;
+
+    [Header("Stat mod")]
+    public float hpMod = 1;
+    public float speedMod = 1;
+    public int expMod = 1;
+    public float damageMod = 1;
 
     void Start()
     {
@@ -31,10 +42,26 @@ public class Enemy : MonoBehaviour
 
         if (agent.isOnNavMesh)
             transform.position = EnemyHelper.SpawnOnNavmesh(transform.position);
+
+        hp = hp + EnemyStatsManager.Instance.healthLevel * hpMod;
+        attackDamage = (int)(attackDamage + EnemyStatsManager.Instance.damageLevel * damageMod);
+        agent.speed = agent.speed + EnemyStatsManager.Instance.speedLevel * speedMod;
+        exp = exp + EnemyStatsManager.Instance.expLevel * expMod;
     }
 
     void FixedUpdate()
     {
+        if(stunned > 0)
+        {
+            if(stunned == maxStunned)
+                agent.velocity = agent.velocity.normalized * -0.3f;
+
+            agent.isStopped = true;
+            stunned--;
+            return;
+        }
+        agent.isStopped = false;
+
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
         if(distanceToPlayer < soundRadius && !playedSound)
@@ -50,21 +77,22 @@ public class Enemy : MonoBehaviour
 
         if (distanceToPlayer > attackRange)
         {
-            // If player is outside attack range, move towards the player
             agent.SetDestination(player.position);
             animator.SetBool("isRunning", true);
             animator.SetBool("isAttacking", false);
         }
         else
         {
-            // If within attack range, stop moving and attack
             agent.SetDestination(transform.position); // Stops moving
+            animator.SetBool("isAttacking", false);
             animator.SetBool("isRunning", false);
-            animator.SetBool("isAttacking", true);
+            transform.LookAt(player.position);
 
-            // Check if we can attack
+
             if (Time.time >= lastAttackTime + attackCooldown)
             {
+                animator.SetBool("isAttacking", true);
+                animator.SetBool("isRunning", false);
                 Attack();
                 lastAttackTime = Time.time; // Reset cooldown
             }
@@ -97,8 +125,7 @@ public class Enemy : MonoBehaviour
         Invoke("ResetSound", Random.Range(5, 20));
     }
 
-
-    void Attack()
+    protected virtual void Attack()
     {
         // Detect player within a small region in front of the enemy
         Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward * attackRadius, attackRadius);
@@ -119,13 +146,18 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(float damage)
     {
         hp -= damage;
+        stunned = maxStunned;
         if (hp < 0)
         {
             Destroy(gameObject);
-            SpawningManager.Instance.OnEnemyKilled();
             ScoreManager.Instance.AddScore(100);
-            LevelManager.Instance.AddExperience(10);
+            LevelManager.Instance.AddExperience(exp);
         }
+    }
+
+    private void OnDestroy()
+    {
+        SpawningManager.Instance.OnEnemyKilled();
     }
 
     // Optional: Gizmo to visualize attack range in the editor

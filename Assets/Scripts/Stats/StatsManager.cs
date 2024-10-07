@@ -21,7 +21,7 @@ public class StatsManager : MonoBehaviour
     #endregion
 
     public int healthLevel = 0;
-    public float Health {  get { return 100f + healthLevel * 10f; } }
+    public float Health {  get { return 90f + healthLevel * 10f; } }
 
     public int hpRegenLevel = 0;
     public float HpRegen { get {  return hpRegenLevel * 0.6f; } }
@@ -39,7 +39,7 @@ public class StatsManager : MonoBehaviour
     public int MagazineSize { get { return 15 + magazineSizeLevel * 5; } }
 
     public int reloadSpeedLevel = 0;
-    public float ReloadSpeed { get { return Mathf.Max(0, 4 - (reloadSpeedLevel * 0.15f)); } }
+    public float ReloadSpeed { get { return Mathf.Max(0, 4.15f - (reloadSpeedLevel * 0.15f)); } }
 
     List<string> stats = new List<string>
     {

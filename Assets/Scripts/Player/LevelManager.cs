@@ -38,7 +38,7 @@ public class LevelManager : MonoBehaviour
         if(currentExp > currentMaxExp)
         {
             currentExp = currentExp - currentMaxExp;
-            currentMaxExp = (int)(level * 100 * 1.2f);
+            currentMaxExp = (int)(currentMaxExp * 1.3f);
             level++;
 
             UIManager.Instance.statsManager.ShowLevelUpScreen();
