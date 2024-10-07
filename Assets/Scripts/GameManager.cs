@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI levelText;
     [SerializeField] TextMeshProUGUI scoreText;
     [SerializeField] TextMeshProUGUI waveText;
+    [SerializeField] GameObject restarButton;
     public void GameOver()
     {
         spawningManager.enabled = false;
@@ -47,6 +49,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(EndPanelSequence());
     }
 
+    
     IEnumerator EndPanelSequence()
     {
         levelText.text = "Level: " + LevelManager.Instance.level;
@@ -84,6 +87,21 @@ public class GameManager : MonoBehaviour
             image.DOColor(c, 1.5f);
         }
 
+        yield return new WaitForSecondsRealtime(1);
+        restarButton.SetActive(true);
         yield return null;
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.P))
+        {
+            RestartGame();
+        }
     }
 }

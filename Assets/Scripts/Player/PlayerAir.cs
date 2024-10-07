@@ -14,6 +14,7 @@ public class PlayerAir : MonoBehaviour
     [SerializeField] Image imgFill;
     [SerializeField] Image imgBck;
     [SerializeField] AudioClip breathClip;
+    [SerializeField] GameObject oxygenWarning;
 
     [SerializeField] Color normalBck;
     [SerializeField] Color warningBck;
@@ -40,6 +41,8 @@ public class PlayerAir : MonoBehaviour
             }
             if (imgBck.color.Equals(warningBck))
                 imgBck.color = normalBck;
+
+            oxygenWarning.SetActive(currentAir <= 30);
 
             imgFill.fillAmount = currentAir / maxAir;
             yield return new WaitForSeconds(1);

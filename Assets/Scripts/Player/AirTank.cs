@@ -19,7 +19,7 @@ public class AirTank : MonoBehaviour
         
         float newSize = 0.03f + (Mathf.Min(100,Mathf.Max(0,distance-15))/100f);
         
-        Vector3 newScale = new Vector3(newSize,5000,newSize);
+        Vector3 newScale = new Vector3(newSize,500,newSize);
         laser.localScale = newScale;
     }
 
@@ -31,6 +31,7 @@ public class AirTank : MonoBehaviour
             if (playerAir != null)
             {
                 playerAir.AddAir(60);
+                AirManager.Instance.TankCollected();
                 Destroy(gameObject);
             }
         }

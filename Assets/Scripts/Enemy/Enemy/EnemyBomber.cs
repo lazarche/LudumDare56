@@ -10,14 +10,16 @@ public class EnemyBomber : Enemy
     {
         chargeSound.Play();
         stunned = 500;
-        Invoke("Explode", 1);
+        StartCoroutine(Explode());
     }
 
-    void Explode()
+    IEnumerator Explode()
     {
+        yield return new WaitForSeconds(1);
         Explosion exp =  Instantiate(explosion, transform.position, Quaternion.identity).GetComponent<Explosion>();
         exp.damage = attackDamage;
         Destroy(gameObject);
         Debug.Log("EXPLOSION");
+        yield return null;
     }
 }

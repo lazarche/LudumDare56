@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -38,7 +39,7 @@ public class Enemy : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.stoppingDistance = stoppingDistance;
 
-        transform.localScale = Vector3.one * Random.Range(1, 1.3f);
+        transform.localScale = Vector3.one * Random.Range(0.9f, 1.2f);
 
         if (agent.isOnNavMesh)
             transform.position = EnemyHelper.SpawnOnNavmesh(transform.position);
@@ -49,11 +50,12 @@ public class Enemy : MonoBehaviour
         exp = exp + EnemyStatsManager.Instance.expLevel * expMod;
     }
 
-    void FixedUpdate()
+    int counter = 0;
+    private void FixedUpdate()
     {
-        if(stunned > 0)
+        if (stunned > 0)
         {
-            if(stunned == maxStunned)
+            if (stunned == maxStunned)
                 agent.velocity = agent.velocity.normalized * -0.3f;
 
             agent.isStopped = true;
@@ -62,6 +64,16 @@ public class Enemy : MonoBehaviour
         }
         agent.isStopped = false;
 
+        counter++;
+        if (counter == 6)
+        {
+            MainLoop();
+            counter = 0;
+        }
+    }
+
+    void MainLoop()
+    {
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
         if(distanceToPlayer < soundRadius && !playedSound)
@@ -150,7 +162,7 @@ public class Enemy : MonoBehaviour
         if (hp < 0)
         {
             Destroy(gameObject);
-            ScoreManager.Instance.AddScore(100);
+            ScoreManager.Instance.AddScore(exp);
             LevelManager.Instance.AddExperience(exp);
         }
     }

@@ -8,7 +8,6 @@ public class CannonExplosion : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("damage aaa");
         if (other.gameObject.CompareTag("Enemy"))
         {
             Enemy enemy = other.GetComponent<Enemy>();

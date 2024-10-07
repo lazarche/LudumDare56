@@ -7,8 +7,6 @@ public class PlayerLook : MonoBehaviour
     Camera cam;
     private float xRotation = 0;
 
-    public float xSensitivity = 30f;
-    private float ySensitivity = 30f;
 
     private void Awake()
     {
@@ -21,11 +19,11 @@ public class PlayerLook : MonoBehaviour
         if (Cursor.lockState != CursorLockMode.Locked)
             return;
 
-        xRotation -= (input.y * Time.deltaTime) * ySensitivity;
+        xRotation -= (input.y * Time.deltaTime) * SensitivityManager.Instance.sensitivity;
         xRotation = Mathf.Clamp(xRotation, -80, 80);
 
         cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
-        transform.Rotate(Vector3.up * (input.x * Time.deltaTime) * xSensitivity);
+        transform.Rotate(Vector3.up * (input.x * Time.deltaTime) * SensitivityManager.Instance.sensitivity);
     }
 }

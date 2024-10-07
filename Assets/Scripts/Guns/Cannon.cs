@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Cannon : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class Cannon : MonoBehaviour
     public Transform launchPoint;
     public GameObject projectilePrefab;
 
+    public Image fillBar;
+
     public Camera cam;
 
     public CharacterController characterController;
@@ -21,6 +24,7 @@ public class Cannon : MonoBehaviour
     private void Start()
     {
         cam = Camera.main;
+        currentColdown = StatsManager.Instance.CannonReload;
     }
 
     // Update is called once per frame
@@ -39,6 +43,8 @@ public class Cannon : MonoBehaviour
                 canFire = true;
             }
         }
+
+        fillBar.fillAmount = Mathf.Clamp01(currentColdown / StatsManager.Instance.CannonReload);
     }
 
     private void TryShoot()

@@ -47,11 +47,9 @@ public class PlayerMotor : MonoBehaviour
         moveDirection.x = input.x;
         moveDirection.z = input.y;
 
-        float currentSpeed = speed;
+        float currentSpeed = speed * 1.4f;
         if (crouching)
             currentSpeed *= 0.7f;
-        else if(sprinting)
-            currentSpeed *= 1.4f;
 
         controller.Move(transform.TransformDirection(moveDirection) * currentSpeed * Time.deltaTime);
         if(!controller.isGrounded)

@@ -23,8 +23,8 @@ public class InputManager : MonoBehaviour
         onFootActions.Crouch.performed += ctx => playerMotor.Crouch(true);
         onFootActions.Crouch.canceled += ctx => playerMotor.Crouch(false);
 
-        onFootActions.Sprint.performed += ctx => playerMotor.ToggleSprinting(true);
-        onFootActions.Sprint.canceled += ctx => playerMotor.ToggleSprinting(false);
+        //onFootActions.Sprint.performed += ctx => playerMotor.ToggleSprinting(true);
+        //onFootActions.Sprint.canceled += ctx => playerMotor.ToggleSprinting(false);
     }
 
     public void End()
