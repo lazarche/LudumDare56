@@ -10,6 +10,9 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] Image hpBar;
 
     [SerializeField] AudioClip[] hurtSound;
+    [SerializeField] AudioClip deathSound;
+
+    bool dead = false;
 
     private void Start()
     {
@@ -18,6 +21,9 @@ public class PlayerHealth : MonoBehaviour
 
     void Regen()
     {
+        if (dead)
+            return;
+
         currentHp += StatsManager.Instance.HpRegen;
         if(currentHp > StatsManager.Instance.Health)
             currentHp = StatsManager.Instance.Health;
@@ -35,20 +41,25 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (dead)
+            return;
+
         currentHp -= damage;
         if(currentHp < 0)
         {
             currentHp = 0;
+            SoundManager.Instance.PlaySound(deathSound);
             Die();
-        }
+        } else
+            SoundManager.Instance.PlaySound(hurtSound[Random.Range(0, hurtSound.Length)], 0.6f);
 
         UpdateText();
-        Debug.Log("Dobio po picki");
-        SoundManager.Instance.PlaySound(hurtSound[Random.Range(0, hurtSound.Length)], 0.6f);
     }
 
     private void Die()
     {
+        dead = true;
+        GameManager.Instance.GameOver();
         Debug.Log("Mrtav sam");
     }
 }

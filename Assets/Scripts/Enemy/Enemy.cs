@@ -71,6 +71,12 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void End()
+    {
+        agent.isStopped = true;
+        this.enabled  = false;
+    }
+
     IEnumerator PlaySound(AudioSource source)
     {
         PlayedSound();
