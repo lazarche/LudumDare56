@@ -21,20 +21,22 @@ public class SpawningManager : MonoBehaviour
     public static SpawningManager Instance { get { return instance; } }
     #endregion
 
-    public GameObject enemyPrefab;               // The enemy prefab to spawn
+    public GameObject enemyMeleePrefab;
+    public GameObject enemyRangePrefab;
+    public GameObject enemyBomberPrefab;
 
-    public int enemiesPerWave = 10;              // Number of enemies per wave
-    public float timeBetweenSpawns = 1.0f;       // Time between individual enemy spawns
-    public float waveDuration = 30f;             // Max time duration of each wave
-    public float nextWaveDelay = 5f;             // Time before next wave starts if timer runs out
-    public float countdownBeforeWave = 3f;       // Countdown before each wave starts
+    public int enemiesPerWave = 10;
+    public float timeBetweenSpawns = 1.0f;
+    public float waveDuration = 30f;
+    public float nextWaveDelay = 5f;
+    public float countdownBeforeWave = 3f;
 
-    private int currentWave = 0;                 // Current wave number
-    private int enemiesAlive = 0;                // Track number of enemies alive
-    private float waveTimer = 0f;                // Timer to track wave duration
+    private int currentWave = 0;
+    private int enemiesAlive = 0;
+    private float waveTimer = 0f;
 
-    private bool waveInProgress = false;         // Whether a wave is currently in progress
-    private List<Transform> spawners;            // List of combined spawners (nonvisible and visible)
+    private bool waveInProgress = false;
+    private List<Transform> spawners;
 
     // To display the countdown
     private float countdownTimer = 0f;           // Timer for countdown before wave starts
@@ -79,7 +81,6 @@ public class SpawningManager : MonoBehaviour
         waveInProgress = true;
         enemiesAlive = numEnemies;
         waveTimer = waveDuration;
-
         for (int i = 0; i < numEnemies; i++)
         {
             SpawnEnemy();
@@ -95,7 +96,14 @@ public class SpawningManager : MonoBehaviour
         Transform spawner = GetRandomSpawner();
         if (spawner != null)
         {
-            GameObject enemy = Instantiate(enemyPrefab, spawner.position, Quaternion.identity);
+            int chance = Random.Range(0, 100);
+
+            if(GetCurrentWave() > 2 && chance > 90)
+                Instantiate(enemyBomberPrefab, spawner.position, Quaternion.identity);
+            else if (GetCurrentWave() > 1 && chance > 60)
+                Instantiate(enemyRangePrefab, spawner.position, Quaternion.identity);
+            else
+                Instantiate(enemyMeleePrefab, spawner.position, Quaternion.identity);
         }
     }
 
@@ -124,6 +132,8 @@ public class SpawningManager : MonoBehaviour
     private void StartNextWave()
     {
         currentWave++;
+        if (currentWave % 3 == 0)
+            EnemyStatsManager.Instance.IncreaseDiff(1);
         StartCoroutine(SpawnWave(enemiesPerWave + currentWave * 10)); // Increase enemies each wave
     }
 

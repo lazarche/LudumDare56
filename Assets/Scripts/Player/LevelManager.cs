@@ -25,7 +25,7 @@ public class LevelManager : MonoBehaviour
     public int level = 1;
 
     public int currentExp = 0;
-    public int currentMaxExp = 100;
+    public int currentMaxExp = 1000;
 
     [Header("UI")]
     [SerializeField] TextMeshProUGUI levelTitle;
@@ -38,7 +38,7 @@ public class LevelManager : MonoBehaviour
         if(currentExp > currentMaxExp)
         {
             currentExp = currentExp - currentMaxExp;
-            currentMaxExp = (int)(currentMaxExp * 1.3f);
+            currentMaxExp = (int)(currentMaxExp * 1.001f) + ((level+1) * 100);
             level++;
 
             UIManager.Instance.statsManager.ShowLevelUpScreen();

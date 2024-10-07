@@ -24,4 +24,12 @@ public class EnemyStatsManager : MonoBehaviour
     public int speedLevel = 0;
     public int damageLevel = 0;
     public int expLevel = 0;
+
+    public void IncreaseDiff(int diff)
+    {
+        healthLevel += diff;
+        speedLevel += diff;
+        damageLevel += diff;
+        expLevel += diff;
+    }
 }

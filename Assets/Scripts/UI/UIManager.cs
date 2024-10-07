@@ -29,10 +29,14 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] GameObject[] allThings;
 
-    private void Update()
+    private void FixedUpdate()
     {
         waveText.text = "Wave: " + SpawningManager.Instance.GetCurrentWave();
-        waveCountdown.text = SpawningManager.Instance.GetCountdownTime() +"";
+        int countDown = (int)SpawningManager.Instance.GetCountdownTime();
+        if (countDown > 0)
+            waveCountdown.text = "Next wave starts in " + countDown;
+        else
+            waveCountdown.text = "";
     }
 
     public void HideEverything()
