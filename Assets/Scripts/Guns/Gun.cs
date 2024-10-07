@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Gun : MonoBehaviour
 {
@@ -9,16 +11,12 @@ public class Gun : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] PlayerMotor playerMotor;
 
+
     public Camera cam;
 
-
     [Header("Stats")]
-    public int maxAmmo = 300;
-    public int magSize = 30;
-    public int currentMag = 30;
-    public float fireRate = 0.15f;
+    public int currentMag = 0;
     public float range = 50;
-    public float damage = 60f;
 
     [Header("Accuracy")]
     public float currentAccuracy;
@@ -35,10 +33,28 @@ public class Gun : MonoBehaviour
     public bool onColdown = false;
     public bool reloading = false;
 
+    [Header("UI")]
+    [SerializeField] TextMeshProUGUI currentMagText;
+    [SerializeField] TextMeshProUGUI maxMagText;
+
     private void Awake()
     {
         cam = Camera.main;
     }
+
+    private void Start()
+    {
+        currentMag = StatsManager.Instance.MagazineSize;
+    }
+
+    private void FixedUpdate()
+    {
+        currentMagText.text = currentMag + "";
+        maxMagText.text = "/"+StatsManager.Instance.MagazineSize;
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(currentMagText.transform.parent.gameObject.GetComponent<RectTransform>());
+    }
+
     public virtual bool CanShoot()
     {
         if (currentMag > 0 && !onColdown && !reloading)
@@ -46,18 +62,21 @@ public class Gun : MonoBehaviour
         return false;
     }
     public virtual void TryShoot() {
+        if (Cursor.lockState != CursorLockMode.Locked)
+            return;
+
         if(CanShoot())
             Shoot();
     }
     public virtual void Shoot() {
-
+        
         shootingTime += Time.deltaTime;
         gunSound.Play();
         muzzleFlash.Play();
         animator.Play("Shoot");
         onColdown = true;
         UpdateAccuracy();
-        Invoke("ShootColdown", fireRate);
+        Invoke("ShootColdown", StatsManager.Instance.FireRate);
     }
     void ShootColdown()
     {
@@ -67,26 +86,14 @@ public class Gun : MonoBehaviour
     }
     public virtual void StartReload()
     {
-        if (reloading || maxAmmo == 0)
+        if (reloading || currentMag == StatsManager.Instance.MagazineSize)
             return;
 
         reloading = true;
         animator.Play("Reload");
     }
     public virtual void Reload() {
-
-
-        int needBullets = magSize - currentMag;
-
-        if (needBullets > maxAmmo)
-        {
-            currentMag += maxAmmo;
-            maxAmmo = 0;
-        } else
-        {
-            currentMag += needBullets;
-            maxAmmo -= needBullets;
-        }
+        currentMag = StatsManager.Instance.MagazineSize;
 
         reloading = false;
     }

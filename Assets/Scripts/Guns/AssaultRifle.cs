@@ -39,7 +39,7 @@ public class AssaultRifle : Gun
             Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
             if(enemy != null)
             {
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(StatsManager.Instance.Damage);
             } 
             else
             {

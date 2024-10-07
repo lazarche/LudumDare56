@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,7 +11,11 @@ public class Enemy : MonoBehaviour
     public int attackDamage = 10;          // Damage dealt per attack
     public float attackRadius = 0.5f;      // Radius of attack (small region in front)
 
+
     public float hp = 100;
+
+    public bool playedSound = false;
+    public float soundRadius = 6f;
 
     private NavMeshAgent agent;            // NavMeshAgent for movement
     [SerializeField]  Animator animator;             // Animator to control animations
@@ -28,9 +33,20 @@ public class Enemy : MonoBehaviour
             transform.position = EnemyHelper.SpawnOnNavmesh(transform.position);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
+
+        if(distanceToPlayer < soundRadius && !playedSound)
+        {
+            Collider[] enemiesAround =  Physics.OverlapSphere(transform.position, 7, LayerMask.GetMask("Enemy"));
+            for(int i = 0; i < enemiesAround.Length; i++)
+            {
+                enemiesAround[i].gameObject.GetComponent<Enemy>().PlayedSound();
+            }
+            Debug.Log("Enemies around: " +  enemiesAround.Length);
+            StartCoroutine(PlaySound(EnemySoundManager.Instance.GetSource(gameObject)));
+        }
 
         if (distanceToPlayer > attackRange)
         {
@@ -55,6 +71,27 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    IEnumerator PlaySound(AudioSource source)
+    {
+        PlayedSound();
+        while (source.isPlaying)
+            yield return null;
+        Destroy(source);
+    }
+
+    void ResetSound()
+    {
+        playedSound = false;
+    }
+
+    void PlayedSound()
+    {
+        playedSound = true;
+        CancelInvoke();
+        Invoke("ResetSound", Random.Range(5, 20));
+    }
+
+
     void Attack()
     {
         // Detect player within a small region in front of the enemy
@@ -64,12 +101,11 @@ public class Enemy : MonoBehaviour
         {
             if (hitCollider.CompareTag("Player"))
             {
-                //PlayerHealth playerHealth = hitCollider.GetComponent<PlayerHealth>();
-                //if (playerHealth != null)
-                //{
-                //    playerHealth.TakeDamage(attackDamage);
-                //    Debug.Log("Player hit by enemy!");
-                //}
+                PlayerHealth playerHealth = hitCollider.GetComponent<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(attackDamage);
+                }
             }
         }
     }
@@ -78,7 +114,12 @@ public class Enemy : MonoBehaviour
     {
         hp -= damage;
         if (hp < 0)
+        {
             Destroy(gameObject);
+            SpawningManager.Instance.OnEnemyKilled();
+            ScoreManager.Instance.AddScore(100);
+            LevelManager.Instance.AddExperience(10);
+        }
     }
 
     // Optional: Gizmo to visualize attack range in the editor

@@ -18,6 +18,9 @@ public class PlayerLook : MonoBehaviour
 
     public void ProcessLook(Vector2 input)
     {
+        if (Cursor.lockState != CursorLockMode.Locked)
+            return;
+
         xRotation -= (input.y * Time.deltaTime) * ySensitivity;
         xRotation = Mathf.Clamp(xRotation, -80, 80);
 
