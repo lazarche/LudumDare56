@@ -20,6 +20,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] GameObject[] gameObjects;
     [SerializeField] Transform playerTransform;
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.None;
+    }
     public void StartGame()
     {
         SoundManager.Instance.PlaySound("buttonClick");
